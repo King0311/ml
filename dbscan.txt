@@ -1,0 +1,60 @@
+import numpy as np
+from sklearn.datasets import make_blobs
+from matplotlib import pyplot as plt
+from matplotlib.pyplot import figure
+from pandas import DataFrame
+
+
+X, _ = make_blobs(
+    n_samples=500,      # Generate 500 data points
+    centers=3,          # Create 3 clusters
+    n_features=2,       # Each data point has 2 features
+    random_state=20     # Set a random seed for reproducibility
+)
+
+
+df=DataFrame(dict(x=X[:,0],y=X[:,1]))
+fig, ax=plt.subplots(figsize=(6,6)) #specifies the size of the figure
+df.plot(ax=ax,kind='scatter',x='x',y='y')
+plt.xlabel('X_1')
+plt.ylabel('X_2')
+plt.show()
+
+from sklearn.cluster import DBSCAN
+
+# Create a DBSCAN clustering object with specified parameters
+clustering = DBSCAN(eps=1, min_samples=5).fit(X)
+
+# Obtain cluster labels for each data point
+cluster = clustering.labels_
+
+# Calculate the number of unique clusters found
+unique_clusters = len(set(cluster))
+
+unique_clusters
+
+
+
+def show_clusters(X, cluster):
+    # Create a DataFrame containing data points and their cluster labels
+    df = DataFrame(dict(x=X[:, 0], y=X[:, 1], label=cluster))
+
+    # Define colors for each cluster label
+    colors = {-1: 'red', 0: 'blue', 1: 'orange', 2: 'green', 3: 'pink'}
+
+    # Create a Matplotlib figure and axis for the plot
+    fig, ax = plt.subplots(figsize=(8, 8))
+
+    # Group data points by their cluster labels
+    grouped = df.groupby('label')
+
+    # Plot each cluster with a different color
+    for key, group in grouped:
+        group.plot(ax=ax, kind='scatter', x='x', y='y', label=key, color=colors[key])
+
+    # Set labels for the x-axis and y-axis
+    plt.xlabel('X_1')
+    plt.ylabel('X_2')
+
+    # Show the plot
+    plt.show()

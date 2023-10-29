@@ -1,0 +1,106 @@
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+df = pd.read_csv('/content/drive/MyDrive/MyDataSets/MNIST_data.csv')
+
+plt.imshow(df.iloc[30213,1:].values.reshape(28,28))
+
+X = df.iloc[:,1:]
+y = df.iloc[:,0]
+
+from sklearn.model_selection import train_test_split
+X_train,X_test,y_train,y_test=train_test_split(X,y,test_size=0.2,random_state=42)
+
+X_train.shape
+
+from sklearn.neighbors import KNeighborsClassifier
+
+knn = KNeighborsClassifier()
+
+knn.fit(X_train,y_train)
+
+import time
+start = time.time()
+y_pred = knn.predict(X_test)
+print(time.time() - start)
+
+from sklearn.metrics import accuracy_score
+accuracy_score(y_test,y_pred)
+
+from sklearn.preprocessing import StandardScaler
+scaler = StandardScaler()
+
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
+
+# PCA
+from sklearn.decomposition import PCA
+pca = PCA(n_components=100)
+
+
+X_train_trf = pca.fit_transform(X_train)
+X_test_trf = pca.transform(X_test)
+
+
+knn = KNeighborsClassifier()
+
+knn.fit(X_train_trf,y_train)
+
+
+y_pred = knn.predict(X_test_trf)
+
+accuracy_score(y_test,y_pred)
+
+
+for i in range(1,785):
+    pca = PCA(n_components=i)
+    X_train_trf = pca.fit_transform(X_train)
+    X_test_trf = pca.transform(X_test)
+
+    knn = KNeighborsClassifier()
+
+    knn.fit(X_train_trf,y_train)
+
+    y_pred = knn.predict(X_test_trf)
+
+    print(accuracy_score(y_test,y_pred))
+
+
+
+# transforming to a 2D coordinate system
+pca = PCA(n_components=2)
+X_train_trf = pca.fit_transform(X_train)
+X_test_trf = pca.transform(X_test)
+
+X_train_trf
+
+
+import plotly.express as px
+y_train_trf = y_train.astype(str)
+fig = px.scatter(x=X_train_trf[:,0],
+                 y=X_train_trf[:,1],
+                 color=y_train_trf,
+                 color_discrete_sequence=px.colors.qualitative.G10
+                )
+fig.show()
+
+
+
+# transforming in 3D
+pca = PCA(n_components=3)
+X_train_trf = pca.fit_transform(X_train)
+X_test_trf = pca.transform(X_test)
+
+
+X_train_trf
+
+import plotly.express as px
+y_train_trf = y_train.astype(str)
+fig = px.scatter_3d(df, x=X_train_trf[:,0], y=X_train_trf[:,1], z=X_train_trf[:,2],
+              color=y_train_trf)
+fig.update_layout(
+    margin=dict(l=20, r=20, t=20, b=20),
+    paper_bgcolor="LightSteelBlue",
+)
+fig.show()

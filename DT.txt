@@ -1,0 +1,22 @@
+import pandas as pd
+from sklearn.metrics import accuracy_score,confusion_matrix
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+data = pd.read_csv('/content/drive/MyDrive/ml/daily_weather.csv')
+data[data.isnull().any(axis=1)].head()
+del data['number']
+data=data.dropna()
+data[data.isnull().any(axis=1)].count()
+clean_data=data.copy()
+clean_data['relative_humidity_3pm'].head()
+clean_data['high_humidity_label']=(clean_data['relative_humidity_3pm']>28)*1
+clean_data['high_humidity_label'].head()
+y=clean_data[['high_humidity_label']].copy()
+x=clean_data[morning_features].copy()
+x_train,x_test,y_train,y_test = train_test_split(x,y,test_size=0.33,random_state=324)
+humidity_classifier=DecisionTreeClassifier(max_leaf_nodes=10,random_state=0)
+humidity_classifier.fit(x_train,y_train)
+humidity_classifier=DecisionTreeClassifier(max_leaf_nodes=10,random_state=0)
+humidity_classifier.fit(x_train,y_train)
+accuracy_score(y_test,y_predicted)
+confusion_matrix(y_test,y_predicted)

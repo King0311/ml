@@ -1,0 +1,87 @@
+import numpy as np
+import pandas as pd
+from sklearn.cluster import KMeans
+##############################
+df = pd.read_csv('/content/drive/MyDrive/MyDataSets/Cgpa_iq.csv')
+print("The shape of data is",df.shape)
+df.head()
+#####################
+import matplotlib.pyplot as plt
+plt.scatter(df['cgpa'],df['iq'])
+#####################
+wcss = []
+
+for i in range(1,11):
+    km = KMeans(n_clusters=i)
+    km.fit_predict(df)
+    wcss.append(km.inertia_)
+
+#################################
+
+plt.plot(range(1,11),wcss) #visualize the WCSS values and look for an "elbow point" in the plot
+
+######################
+X = df.iloc[:,:].values
+km = KMeans(n_clusters=4)
+y_means = km.fit_predict(X)
+#The resulting y_means is an array of cluster labels,
+#where each element corresponds to the cluster assignment for a data point in X.
+
+#############################
+X[y_means == 3,1]
+#the expression X[y_means == 3, 1] will give you an array containing the values of the second feature (column) of all data points that belong to cluster 3.
+#This can be useful for analyzing or visualizing the distribution of that particular feature within the cluster.
+
+##########################333
+
+plt.scatter(X[y_means == 0,0],X[y_means == 0,1],color='blue')
+plt.scatter(X[y_means == 1,0],X[y_means == 1,1],color='red')
+plt.scatter(X[y_means == 2,0],X[y_means == 2,1],color='green')
+plt.scatter(X[y_means == 3,0],X[y_means == 3,1],color='yellow')
+
+###########################33
+
+
+from sklearn.datasets import make_blobs
+
+# Define the centroids (centers) for the clusters
+centroids = [(-5, -5, 5), (5, 5, -5), (3.5, -2.5, 4), (-2.5, 2.5, -4)]
+
+# Define the standard deviation for each cluster
+cluster_std = [1, 1, 1, 1]
+
+# Generate synthetic data with specified parameters
+X, y = make_blobs(
+    n_samples=200,          # Total number of data points
+    cluster_std=cluster_std, # Standard deviation for each cluster
+    centers=centroids,      # Cluster centers
+    n_features=3,           # Number of features (dimensions) for each data point
+    random_state=1          # Random seed for reproducibility
+)
+
+##################
+import plotly.express as px
+fig = px.scatter_3d(x=X[:,0], y=X[:,1], z=X[:,2])
+fig.show()
+############################
+wcss = []
+for i in range(1,21):
+    km = KMeans(n_clusters=i)
+    km.fit_predict(X)
+    wcss.append(km.inertia_)
+
+###############################
+plt.plot(range(1,21),wcss)
+##################################
+km = KMeans(n_clusters=4)
+y_pred = km.fit_predict(X)
+###############################
+
+df = pd.DataFrame()
+
+df['col1'] = X[:,0]
+df['col2'] = X[:,1]
+df['col3'] = X[:,2]
+df['label'] = y_pred
+fig = px.scatter_3d(df,x='col1', y='col2', z='col3',color='label')
+fig.show()
